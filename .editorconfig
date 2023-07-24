@@ -1,0 +1,24 @@
+# To learn more about .editorconfig see https://aka.ms/editorconfigdocs
+###############################
+# Core EditorConfig Options   #
+###############################
+
+root = true
+
+# All files
+[*]
+insert_final_newline = true
+charset = utf-8
+# Code files
+[*.{cs,csx,vb,vbx}]
+indent_size = 4
+indent_style = space
+trim_trailing_whitespace = true
+charset = utf-8-bom
+
+# CS3001: Argument type is not CLS-compliant
+dotnet_diagnostic.CS3001.severity = none
+
+[*.md]
+max_line_length = off
+trim_trailing_whitespace = false
