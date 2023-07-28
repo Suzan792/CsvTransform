@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 using CsvHelper;
 
 [assembly: CLSCompliant(false)]
@@ -36,22 +37,21 @@ namespace CsvTimer
                     .Select(t => new Dynamics
                     {
                         Type = GetType(t),
-                        Project = t.Client,
-                        ProjectTask = t.Project,
-                        HourType = t.Task,
-                        ExternalComments = t.Description,
+                        Project = Project(t),
+                        ProjectTask = ProjectTask(t),
+                        HourType = HourType(t),
+                        ExternalComments = ExternalComments(t),
                         Date = $"{DateTime.ParseExact(t.StartDate, "yyyy-MM-dd", DateTimeFormatInfo.InvariantInfo).Date:dd-MM-yyyy}",
-                        Duration = $"{t.Duration.TotalHours:0.00}",
+                        Duration = Duration(t),
                     })
                     .ToList();
 
                 var totalTime = togglRows.Aggregate(TimeSpan.Zero, (sum, next) => sum + next.Duration);
                 Console.WriteLine($"Toggl: {togglRows.Count} rows. {(int)totalTime.TotalHours}h {totalTime.Minutes}m");
 
-                var jiraTime = togglRows
-                    .Where(t => !t.Project.StartsWith("Source", StringComparison.OrdinalIgnoreCase))
-                    .Aggregate(TimeSpan.Zero, (sum, next) => sum + next.Duration);
-                Console.WriteLine($"Dynamics:  {rows.Count} rows. {(int)jiraTime.TotalHours}h {jiraTime.Minutes}m");
+                var dynamicsTime = rows
+                    .Aggregate(TimeSpan.Zero, (sum, next) => sum + TimeSpan.FromHours(double.Parse(next.Duration, CultureInfo.InvariantCulture)));
+                Console.WriteLine($"Dynamics:  {rows.Count} rows. {(int)dynamicsTime.TotalHours}h {dynamicsTime.Minutes}m");
             }
 
             using (var writer = new StreamWriter(Path.Combine(Path.GetDirectoryName(path)!, $"{Path.GetFileNameWithoutExtension(path)}_dynamics{Path.GetExtension(path)}")))
@@ -59,6 +59,25 @@ namespace CsvTimer
             {
                 csv.WriteRecords(rows);
             }
+        }
+
+        private static string Project(Toggl t)
+        {
+            return t.Client switch
+            {
+                "Vacation" or "Absence" => string.Empty,
+                _ => Regex.Replace(t.Client, @"\s+-\s+P\d\d\d+$", string.Empty)
+            };
+        }
+
+        private static string ProjectTask(Toggl t)
+        {
+            return t.Client switch
+            {
+                "Vacation" => string.Empty,
+                "Absence" => string.Empty,
+                _ => t.Project,
+            };
         }
 
         private static string GetType(Toggl t)
@@ -69,6 +88,39 @@ namespace CsvTimer
                 "Absence" => "Absence",
                 _ => "Work",
             };
+        }
+
+        private static string HourType(Toggl t)
+        {
+            return t.Client switch
+            {
+                "Vacation" => "Vacation",
+                "Absence" => "Absence",
+                _ => t.Task,
+            };
+        }
+
+        private static string ExternalComments(Toggl t)
+        {
+            if (!string.IsNullOrWhiteSpace(t.Description))
+            {
+                return t.Description;
+            }
+
+            return t.Client switch
+            {
+                "Vacation" => "Vacation",
+                "Absence" => "Absence",
+                _ => t.Description,
+            };
+        }
+
+        private static string Duration(Toggl t)
+        {
+            var hours = t.Duration.TotalHours;
+            var correctedHours = hours / 1.665;
+
+            return correctedHours.ToString("F", CultureInfo.InvariantCulture);
         }
     }
 }
