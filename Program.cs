@@ -61,6 +61,16 @@ namespace CsvTimer
             }
         }
 
+        private static string GetType(Toggl t)
+        {
+            return t.Client switch
+            {
+                "Vacation" => "Vacation",
+                "Absence" => "Absence",
+                _ => "Work",
+            };
+        }
+
         private static string Project(Toggl t)
         {
             return t.Client switch
@@ -80,23 +90,17 @@ namespace CsvTimer
             };
         }
 
-        private static string GetType(Toggl t)
-        {
-            return t.Client switch
-            {
-                "Vacation" => "Vacation",
-                "Absence" => "Absence",
-                _ => "Work",
-            };
-        }
-
         private static string HourType(Toggl t)
         {
             return t.Client switch
             {
                 "Vacation" => "Vacation",
                 "Absence" => "Absence",
-                _ => t.Task,
+                _ => t.Task switch
+                {
+                    null or "" => t.Tags,
+                    _ => t.Task,
+                },
             };
         }
 
