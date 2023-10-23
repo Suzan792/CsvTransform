@@ -25,6 +25,9 @@ namespace CsvTimer
         [Name("Duration")]
         public string Duration { get; init; } = null!;
 
+        [Name("Role")]
+        public string Role { get; init; } = null!;
+
         public override string ToString()
         {
             return $"{Type}, {Project}, {ProjectTask}, {HourType}, {ExternalComments}, {Date}, {Duration}";

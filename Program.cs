@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text.RegularExpressions;
 using CsvHelper;
+using Microsoft.Extensions.Configuration;
 
 [assembly: CLSCompliant(false)]
 
@@ -14,12 +16,26 @@ namespace CsvTimer
     {
         public static void Main(string[] args)
         {
-            if (args is null)
+            ArgumentNullException.ThrowIfNull(args);
+            if (args.Length != 1)
             {
-                throw new ArgumentNullException(nameof(args));
+                throw new ArgumentException("expected 1 arg: path");
             }
 
             var path = args[0];
+
+            var config = new ConfigurationBuilder()
+                .SetBasePath(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)!)
+                .AddJsonFile("appsettings.json", optional: false)
+                .AddJsonFile("appsettings.Personal.json", optional: true)
+                .Build();
+
+            var role = config.GetSection("Role").Value;
+            if (string.IsNullOrWhiteSpace(role) || string.Equals(role, "TODO", StringComparison.OrdinalIgnoreCase))
+            {
+                throw new InvalidOperationException("Role (appsettings) is required");
+            }
+
             IList<Dynamics> rows;
             using (var reader = new StreamReader(path))
             using (var csv = new CsvReader(reader, CultureInfo.InvariantCulture))
@@ -43,6 +59,7 @@ namespace CsvTimer
                         ExternalComments = ExternalComments(t),
                         Date = $"{DateTime.ParseExact(t.StartDate, "yyyy-MM-dd", DateTimeFormatInfo.InvariantInfo).Date:dd-MM-yyyy}",
                         Duration = Duration(t),
+                        Role = role,
                     })
                     .ToList();
 

@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "CsvTimer": {
+      "commandName": "Project",
+      "commandLineArgs": "path-to-toggl-export"
+    }
+  }
+}

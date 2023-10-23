@@ -345,3 +345,5 @@ healthchecksdb
 
 # End of https://www.gitignore.io/api/csharp
 /.vscode
+
+appsettings.Personal.json
