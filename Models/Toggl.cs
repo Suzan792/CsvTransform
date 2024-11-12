@@ -34,8 +34,5 @@ namespace CsvTimer
         public TimeSpan Duration { get; init; }
 
         public string Tags { get; init; } = null!;
-
-        [Name("Amount (USD)")]
-        public string Amount { get; init; } = null!;
     }
 }

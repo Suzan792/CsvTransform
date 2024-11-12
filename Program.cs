@@ -50,16 +50,22 @@ namespace CsvTimer
                     .ToList();
 
                 rows = togglRows
-                    .Select(t => new Dynamics
+                    .Select(t =>
                     {
-                        Type = GetType(t),
-                        Project = Project(t),
-                        ProjectTask = ProjectTask(t),
-                        HourType = HourType(t),
-                        ExternalComments = ExternalComments(t),
-                        Date = $"{DateTime.ParseExact(t.StartDate, "yyyy-MM-dd", DateTimeFormatInfo.InvariantInfo).Date:dd-MM-yyyy}",
-                        Duration = Duration(t),
-                        Role = role,
+                        var comment = ExternalComments(t);
+                        return new Dynamics
+                        {
+                            Type = GetType(t),
+                            Project = Project(t),
+                            ProjectTask = ProjectTask(t),
+                            HourType = HourType(t),
+                            ExternalComments = comment.externalComment,
+                            JiraTicket = comment.jiraTicket,
+                            Date =
+                                $"{DateTime.ParseExact(t.StartDate, "yyyy-MM-dd", DateTimeFormatInfo.InvariantInfo).Date:dd-MM-yyyy}",
+                            Duration = Duration(t),
+                            Role = role,
+                        };
                     })
                     .ToList();
 
@@ -121,19 +127,26 @@ namespace CsvTimer
             };
         }
 
-        private static string ExternalComments(Toggl t)
+        private static (string jiraTicket, string externalComment) ExternalComments(Toggl t)
         {
-            if (!string.IsNullOrWhiteSpace(t.Description))
+            if (string.IsNullOrWhiteSpace(t.Description))
             {
-                return t.Description;
+                return (string.Empty, t.Description);
             }
 
-            return t.Client switch
+            if (t.Client is "Vacation" or "Absence")
             {
-                "Vacation" => "Vacation",
-                "Absence" => "Absence",
-                _ => t.Description,
-            };
+                return (string.Empty, t.Client);
+            }
+
+            var split = t.Description.Split('|');
+
+            if (split.Length == 2)
+            {
+                return (split[0].TrimEnd(), split[1].TrimStart());
+            }
+
+            return (string.Empty, t.Description);
         }
 
         private static string Duration(Toggl t)

@@ -19,6 +19,9 @@ namespace CsvTimer
         [Name("External Comments")]
         public string ExternalComments { get; init; } = null!;
 
+        [Name("Jira Ticket")]
+        public string JiraTicket { get; init; } = null!;
+
         [Name("Date")]
         public string Date { get; init; } = null!;
 
@@ -30,7 +33,7 @@ namespace CsvTimer
 
         public override string ToString()
         {
-            return $"{Type}, {Project}, {ProjectTask}, {HourType}, {ExternalComments}, {Date}, {Duration}";
+            return $"{Type}, {Project}, {ProjectTask}, {HourType}, {JiraTicket}, {ExternalComments}, {Date}, {Duration}";
         }
     }
 }
