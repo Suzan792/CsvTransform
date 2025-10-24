@@ -4,6 +4,8 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Text.RegularExpressions;
 using CsvHelper;
 using Microsoft.Extensions.Configuration;
@@ -53,6 +55,8 @@ namespace CsvTimer
                     .Select(t =>
                     {
                         var comment = ExternalComments(t);
+                        if (comment.externalComment.Length > 100)
+                            System.Console.WriteLine($"The following comment has length > 100: \n{JsonSerializer.Serialize(t)}");
                         return new Dynamics
                         {
                             Type = GetType(t),
