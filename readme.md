@@ -1,6 +1,6 @@
 # CsvTimer
 
-Converts the csv from Toggl Track to a format that matches what Dymaics wants.
+Converts the csv from Toggl Track to a format that matches what Dynamics wants.
 
 ## First setup
 
@@ -23,11 +23,7 @@ dotnet run -- /path/to/exported/hours/from/toggl.csv
 | Client      | Project                                 |
 | Project     | Project task                            |
 | Task        | Hour Type                               |
-| Description | [Jira Ticket \|] External comments (\*) |
+| Description | [Jira Ticket :] External comments (\*) |
 
-(\*) if the comment contains a `|`, then the first part will be interpreted as Jira Ticket.  
-Format: `CODE-1234 | My comment`
-
-## Special cases
-
-If Client is Vacation or Absence, this will automatically fill in the correct Work Type & other columns.
+(\*) if the comment contains a `:`, then the first part will be interpreted as Jira Ticket.  
+Format: `CODE-1234 : My comment`
