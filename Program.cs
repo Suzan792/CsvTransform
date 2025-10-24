@@ -105,11 +105,19 @@ namespace CsvTimer
 
         private static string ProjectTask(Toggl t)
         {
+            var brokenTasks = new List<string>(){
+                "Indirect",
+                "Technical Maintenance",
+                "Continuous Delivery",
+                "Operationeel Overleg",
+                "Doorontwikkeling",
+                "Strategy & roadmap"
+            };
             return t.Client switch
             {
                 "Vacation" => string.Empty,
                 "Absence" => string.Empty,
-                _ => t.Project,
+                _ => brokenTasks.Contains(t.Project) ? "" : t.Project,
             };
         }
 
@@ -134,12 +142,12 @@ namespace CsvTimer
                 return (string.Empty, t.Description);
             }
 
-            if (t.Client is "Vacation" or "Absence")
-            {
-                return (string.Empty, t.Client);
-            }
+            // if (t.Client is "Vacation" or "Absence")
+            // {
+            //     return (string.Empty, t.Client);
+            // }
 
-            var split = t.Description.Split('|');
+            var split = t.Description.Split(':');
 
             if (split.Length == 2)
             {
@@ -158,3 +166,4 @@ namespace CsvTimer
         }
     }
 }
+ 
