@@ -115,7 +115,8 @@ namespace CsvTimer
                 "Continuous Delivery",
                 "Operationeel Overleg",
                 "Doorontwikkeling",
-                "Strategy & roadmap"
+                "Strategy & roadmap",
+                "Development support"
             };
             return t.Client switch
             {
