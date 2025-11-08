@@ -32,7 +32,5 @@ namespace CsvTimer
         public string EndTime { get; init; } = null!;
 
         public TimeSpan Duration { get; init; }
-
-        public string Tags { get; init; } = null!;
     }
 }

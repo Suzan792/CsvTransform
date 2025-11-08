@@ -54,15 +54,15 @@ namespace CsvTimer
                 rows = togglRows
                     .Select(t =>
                     {
-                        var comment = ExternalComments(t);
+                        var comment = SplitComment(t);
                         if (comment.externalComment.Length > 100)
-                            System.Console.WriteLine($"The following comment has length > 100: \n{JsonSerializer.Serialize(t)}");
+                            Console.WriteLine($"The following comment has length > 100: \n{JsonSerializer.Serialize(t)}");
                         return new Dynamics
                         {
                             Type = GetType(t),
                             Project = Project(t),
                             ProjectTask = ProjectTask(t),
-                            HourType = HourType(t),
+                            HourType = HourType(t, comment.hourTypeCharacter),
                             ExternalComments = comment.externalComment,
                             JiraTicket = comment.jiraTicket,
                             Date =
@@ -125,40 +125,51 @@ namespace CsvTimer
             };
         }
 
-        private static string HourType(Toggl t)
+        private static string HourType(Toggl t, string hourTypeChar)
         {
             return t.Client switch
             {
                 "Vacation" => "Vacation",
                 "Absence" => "Absence",
-                _ => t.Task switch
+                _ => hourTypeChar switch
                 {
-                    null or "" => t.Tags,
-                    _ => t.Task,
+                    "D" => "Development",
+                    "O" => "Overleg",
+                    "T" => "Testing & Code review",
+                    "S" => "Scope Management",
+                    _ => ""
                 },
             };
         }
 
-        private static (string jiraTicket, string externalComment) ExternalComments(Toggl t)
+        private static (string jiraTicket, string externalComment, string hourTypeCharacter) SplitComment(Toggl t)
         {
             if (string.IsNullOrWhiteSpace(t.Description))
             {
-                return (string.Empty, t.Description);
+                return (string.Empty, t.Description, string.Empty);
             }
 
-            // if (t.Client is "Vacation" or "Absence")
-            // {
-            //     return (string.Empty, t.Client);
-            // }
+            var ticket = string.Empty;
+            var extComment = t.Description;
+            var hourTypeChar = string.Empty;
 
-            var split = t.Description.Split(':');
+            var split1 = t.Description.Split(':');
 
-            if (split.Length == 2)
+            if (split1.Length == 2)
             {
-                return (split[0].TrimEnd(), split[1].TrimStart());
+                ticket = split1[0].TrimEnd();
+                extComment = split1[1].TrimStart(); //comment and possible hour type character
             }
 
-            return (string.Empty, t.Description);
+            var split2 = extComment.Split('|');
+
+            if (split2.Length == 2)
+            {
+                extComment = split2[0].TrimEnd();
+                hourTypeChar = split2[1].TrimStart();
+            }
+
+            return (ticket, extComment, hourTypeChar);
         }
 
         private static string Duration(Toggl t)
