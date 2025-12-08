@@ -10,20 +10,20 @@ Converts the csv from Toggl Track to a format that matches what Dynamics wants.
 ## How to run
 
 ```
-dotnet run -- /path/to/exported/hours/from/toggl.csv
+dotnet run /path/to/exported/hours/from/toggl.csv
 ```
 
 ## Toggl setup
 
-| Toggl       | Dynamics                                                     |
-| ----------- | ------------------------------------------------------------ |
-| (automatic) | Work Type                                                    |
-| Client      | Project                                                      |
-| Project     | Project task                                                 |
+| Toggl       | Dynamics                                                      |
+| ----------- | ------------------------------------------------------------- |
+| (automatic) | Work Type                                                     |
+| Client      | Project                                                       |
+| Project     | Project task                                                  |
 | Description | [Jira Ticket :] External comments (\*) \| Hour Type character |
 
 (\*) if the comment contains a `:`, then the first part will be interpreted as Jira Ticket.  
-Format: `CODE-1234 : My comment | Hour Type`
+Format: `CODE-1234: My comment | Hour Type`
 
 The hour type can be one of the following characters:
 | Character  | Hour Type                            |
