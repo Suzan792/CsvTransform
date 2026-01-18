@@ -116,7 +116,9 @@ namespace CsvTimer
                 "Operationeel Overleg",
                 "Doorontwikkeling",
                 "Strategy & roadmap",
-                "Development support"
+                "Development support",
+                "PoC",
+                "Service Prioriteit #3 & #4 (Major & Minor)"
             };
             return t.Client switch
             {
