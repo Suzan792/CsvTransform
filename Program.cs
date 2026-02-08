@@ -118,6 +118,9 @@ namespace CsvTimer
                 "Strategy & roadmap",
                 "Development support",
                 "PoC",
+                "Service Deployment",
+                "Instelling module",
+                "Service Prioriteit #1 & #2 (Showstopper & Critical)",
                 "Service Prioriteit #3 & #4 (Major & Minor)"
             };
             return t.Client switch
