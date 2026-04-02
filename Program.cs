@@ -118,6 +118,7 @@ namespace CsvTimer
                 "Strategy & roadmap",
                 "Development support",
                 "PoC",
+                "MVP",
                 "Service Deployment",
                 "Instelling module",
                 "Service Prioriteit #1 & #2 (Showstopper & Critical)",
